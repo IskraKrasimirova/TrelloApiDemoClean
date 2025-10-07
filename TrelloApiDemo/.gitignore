@@ -1,0 +1,31 @@
+﻿# Build artifacts
+bin/
+obj/
+*.dll
+*.exe
+
+# User secrets
+secrets.json
+
+# Configuration
+appsettings.json
+.env
+TrelloApiDemo.Tests/appsettings.json
+
+# IDE settings
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test results
+TestResults/
+*.trx
+
+# Logs
+*.log
+
+# Others
+*.DS_Store
+
