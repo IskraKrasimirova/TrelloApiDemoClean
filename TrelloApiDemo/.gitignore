@@ -1,31 +1,40 @@
-﻿# Build artifacts
+# 🛠️ Build artifacts
 bin/
 obj/
+**/bin/
+**/obj/
 *.dll
 *.exe
 
-# User secrets
-secrets.json
-
-# Configuration
-appsettings.json
-.env
-TrelloApiDemo.Tests/appsettings.json
-
-# IDE settings
+# 🧑‍💻 IDE-specific folders and files
+.vs/
 .vscode/
+**/FileContentIndex/
+*.vsidx
+*.dtbcache*
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
 
-# Test results
+# 👤 User-specific and local files
+*.db
+*.log
+*.config
+*.json
+*.metadata*
+*.project*
+.env
+CopilotIndices/
+
+# 🔐 Secrets and configuration
+secrets.json
+appsettings.json
+TrelloApiDemo.Tests/appsettings.json
+
+# 🧪 Test results
 TestResults/
 *.trx
 
-# Logs
-*.log
-
-# Others
+# 🧹 Miscellaneous
 *.DS_Store
-
