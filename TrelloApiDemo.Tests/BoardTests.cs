@@ -38,8 +38,9 @@ namespace TrelloApiDemo.Tests
         public static IEnumerable<object[]> BoardNameCases()
         {
             yield return new object[] { "Short name", "A" };
-            yield return new object[] { "Long name", "ThisIsAVeryLongBoardNameThatExceedsNormalLength" };
+            yield return new object[] { "Long name", "ThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLength" };
             yield return new object[] { "Lowercase name", "demoboard" };
+            yield return new object[] { "Uppercase name", "DEMOBOARD" };
             yield return new object[] { "Mixed case name", "DEMOboard" };
             yield return new object[] { "Numeric name", "123456" };
             yield return new object[] { "Symbol-only name", "!@#$%^&*()" };
