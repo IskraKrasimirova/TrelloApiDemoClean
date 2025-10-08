@@ -38,3 +38,15 @@ TestResults/
 
 # 🧹 Miscellaneous
 *.DS_Store
+
+# Ignore all build output recursively
+**/bin/
+**/obj/
+**/*.dll
+**/*.exe
+**/*.A
+**/*.pdb
+**/*.cache
+**/*.db
+**/*.log
+
