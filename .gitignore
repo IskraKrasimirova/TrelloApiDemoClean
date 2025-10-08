@@ -31,6 +31,8 @@ CopilotIndices/
 secrets.json
 appsettings.json
 TrelloApiDemo.Tests/appsettings.json
+**/appsettings.json
+**/appsettings.*.json
 
 # 🧪 Test results
 TestResults/
