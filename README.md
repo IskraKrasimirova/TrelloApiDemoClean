@@ -1,5 +1,4 @@
-﻿# TrelloApiDemo
-## 🔗 Trello API Integration
+﻿## 🔗 Trello API Integration
 
 This project demonstrates automated interaction with Trello boards, lists, and cards using the official [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/). It is designed for testing and learning purposes, with a focus on clean structure, secure configuration, and reproducible results.
 
