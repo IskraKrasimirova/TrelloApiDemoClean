@@ -7,6 +7,7 @@ namespace TrelloApiDemo.Tests
 {
 
     [TestClass]
+    [DoNotParallelize]
     public class BoardTests
     {
         private TrelloClient? _client;
@@ -25,11 +26,11 @@ namespace TrelloApiDemo.Tests
 
         [TestMethod]
         [DynamicData(nameof(BoardNameCases), DynamicDataSourceType.Method, DynamicDataDisplayName = nameof(GetTestDisplayName))]
-        public void CreateBoard_WithVariousNames_ShouldReturnValidBoard(string testCase, string boardName)
+        public async Task CreateBoard_WithVariousNames_ShouldReturnValidBoardAsync(string testCase, string boardName)
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateBoard(boardName);
+            var response = await _client.CreateBoardAsync(boardName);
 
             Assert.AreEqual(200, (int)response.StatusCode, $"Failed for name: {boardName}");
             Assert.IsNotNull(response.Data?.Id, $"Board ID is null for name: {boardName}");
@@ -41,7 +42,7 @@ namespace TrelloApiDemo.Tests
             yield return new object[] { "Short name", "A" };
             yield return new object[] { "Long name", "ThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLength" };
             yield return new object[] { "Lowercase name", "demoboard" };
-            yield return new object[] { "Uppercase name", "DEMOBOARD" };
+            yield return new object[] { "Uppercase name", "TESTBOARD" };
             yield return new object[] { "Mixed case name", "DEMOboard" };
             yield return new object[] { "Numeric name", "123456" };
             yield return new object[] { "Symbol-only name", "!@#$%^&*()" };
@@ -50,17 +51,17 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void CreateAndGetBoard_ShouldReturnSameBoard()
+        public async Task CreateAndGetBoard_ShouldReturnSameBoardAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var createResponse = _client.CreateBoard("Smoke_" + Guid.NewGuid());
+            var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
             Assert.AreEqual(200, (int)createResponse.StatusCode);
 
             var boardId = createResponse.Data?.Id;
             Assert.IsNotNull(boardId, "Board ID is null after creation.");
 
-            var getResponse = _client.SendRequest<Board>(new RestRequest($"boards/{boardId}", Method.Get)
+            var getResponse = await _client.SendRequestAsync<Board>(new RestRequest($"boards/{boardId}", Method.Get)
                 .AddQueryParameter("key", Config.Key)
                 .AddQueryParameter("token", Config.Token));
 
@@ -69,29 +70,29 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void CreateBoard_WithEmptyName_ShouldFail()
+        public async Task CreateBoard_WithEmptyName_ShouldFailAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateBoard("" ?? throw new ArgumentNullException());
+            var response = await _client.CreateBoardAsync("" ?? throw new ArgumentNullException());
 
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for empty name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "Board ID should be null for empty name");
-            Assert.IsTrue(response.Content?.Contains("invalid value for name"), "Expected error message for invalid board name");
+            Assert.IsTrue((response.Content.Contains("invalid value for name")), "Expected error message for invalid board name");
         }
 
         [TestMethod]
-        public void CreateBoard_WithNullName_ShouldFail()
+        public async Task CreateBoard_WithNullName_ShouldFailAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateBoard(null);
+            var response = await _client.CreateBoardAsync(null);
             
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for null name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "Board ID should be null for null name");
-            Assert.IsTrue(response.Content?.Contains("invalid value for name"), "Expected error message for null board name");
+            Assert.Contains("invalid value for name", response.Content, "Expected error message for null board name");
         }
 
         [ClassCleanup]
@@ -103,7 +104,7 @@ namespace TrelloApiDemo.Tests
             request.AddQueryParameter("key", Config.Key);
             request.AddQueryParameter("token", Config.Token);
 
-            var response = client.SendRequest<List<Board>>(request);
+            var response = client.SendRequestAsync<List<Board>>(request).GetAwaiter().GetResult();
 
             if (response.Data != null)
             {
@@ -115,7 +116,7 @@ namespace TrelloApiDemo.Tests
                         deleteRequest.AddQueryParameter("key", Config.Key);
                         deleteRequest.AddQueryParameter("token", Config.Token);
 
-                        client.SendRequest(deleteRequest);
+                        client.SendRequestAsync(deleteRequest).GetAwaiter().GetResult();
                     }
                 }
             }

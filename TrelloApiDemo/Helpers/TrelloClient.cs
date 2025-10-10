@@ -10,16 +10,16 @@ namespace TrelloApiDemo.Helpers
         private readonly RestClient _client;
         private static readonly object _rateLock = new();
         private static DateTime _lastRequestTime = DateTime.MinValue;
-        private static readonly TimeSpan _minInterval = TimeSpan.FromMilliseconds(100);
+        private static readonly TimeSpan _minInterval = TimeSpan.FromMilliseconds(200);
 
         public TrelloClient()
         {
             _client = new RestClient(Config.BaseUrl);
         }
 
-        public RestResponse<T> SendRequest<T>(RestRequest request) where T : new()
+        public async Task<RestResponse<T>> SendRequestAsync<T>(RestRequest request) where T : new()
         {
-            var response = _client.Execute<T>(request);
+            var response = await _client.ExecuteAsync<T>(request);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -34,9 +34,9 @@ namespace TrelloApiDemo.Helpers
             return response;
         }
 
-        public RestResponse SendRequest(RestRequest request)
+        public async Task<RestResponse> SendRequestAsync(RestRequest request)
         {
-            var response = _client.Execute(request);
+            var response = await _client.ExecuteAsync(request);
 
             if (!response.IsSuccessful)
             {
@@ -51,17 +51,17 @@ namespace TrelloApiDemo.Helpers
             return JsonConvert.DeserializeObject<T>(response.Content!)!;
         }
 
-        public RestResponse<Board> CreateBoard(string? name)
+        public async Task<RestResponse<Board>> CreateBoardAsync(string? name)
         {
             var request = new RestRequest("boards", Method.Post);
             request.AddQueryParameter("name", name);
             AddAuth(request);
             request.AddQueryParameter("desc", "Created by automated test");
 
-            return _client.Execute<Board>(request);
+            return await _client.ExecuteAsync<Board>(request);
         }
 
-        public RestResponse<ListModel> CreateList(string? listName, string boardId)
+        public async Task<RestResponse<ListModel>> CreateListAsync(string? listName, string boardId)
         {
             EnforceRateLimit();
             var request = new RestRequest("lists", Method.Post);
@@ -69,10 +69,10 @@ namespace TrelloApiDemo.Helpers
             request.AddQueryParameter("idBoard", boardId);
             AddAuth(request);
 
-            return _client.Execute<ListModel>(request);
+            return await _client.ExecuteAsync<ListModel>(request);
         }
 
-        public RestResponse<Card> CreateCard(string? name, string listId, string? description = null, string? dueDate = null)
+        public async Task<RestResponse<Card>> CreateCardAsync(string? name, string listId, string? description = null, string? dueDate = null)
         {
             EnforceRateLimit();
             var request = new RestRequest("cards", Method.Post);
@@ -90,10 +90,10 @@ namespace TrelloApiDemo.Helpers
                 Console.WriteLine($"{param.Name} = {param.Value}");
             }
 
-            return _client.Execute<Card>(request);
+            return await _client.ExecuteAsync<Card>(request);
         }
 
-        public RestResponse<Card> UpdateCard(string cardId, string? newName = null, string? newDescription = null, string? newDueDate = null)
+        public async Task<RestResponse<Card>> UpdateCardAsync(string cardId, string? newName = null, string? newDescription = null, string? newDueDate = null)
         {
             if (string.IsNullOrEmpty(cardId))
                 throw new ArgumentException("Card ID cannot be null or empty.", nameof(cardId));
@@ -105,10 +105,10 @@ namespace TrelloApiDemo.Helpers
             request.AddQueryParameter("due", newDueDate);
             AddAuth(request);
 
-            return _client.Execute<Card>(request);
+            return await _client.ExecuteAsync<Card>(request);
         }
 
-        public RestResponse<Card> PartialCardUpdate(string cardId, string? newName = null, string? newDescription = null, string? newDueDate = null)
+        public async Task<RestResponse<Card>> PartialCardUpdateAsync(string cardId, string? newName = null, string? newDescription = null, string? newDueDate = null)
         {
             if (string.IsNullOrEmpty(cardId))
                 throw new ArgumentException("Card ID cannot be null or empty.", nameof(cardId));
@@ -124,10 +124,10 @@ namespace TrelloApiDemo.Helpers
           
             AddAuth(request);
 
-            return _client.Execute<Card>(request);
+            return await _client.ExecuteAsync<Card>(request);
         }
 
-        public RestResponse DeleteCard(string cardId)
+        public async Task<RestResponse> DeleteCardAsync(string cardId)
         {
             if (string.IsNullOrEmpty(cardId))
                 throw new ArgumentException("Card ID cannot be null or empty.", nameof(cardId));
@@ -135,7 +135,7 @@ namespace TrelloApiDemo.Helpers
             var request = new RestRequest($"cards/{cardId}", Method.Delete);
             AddAuth(request);
 
-            return _client.Execute(request);
+            return await _client.ExecuteAsync(request);
         }
 
         private static void AddAuth(RestRequest request)

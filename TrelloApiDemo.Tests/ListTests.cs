@@ -11,7 +11,7 @@ namespace TrelloApiDemo.Tests
         private string? _boardId;
 
         [TestInitialize]
-        public void Setup()
+        public async Task Setup()
         {
             var configuration = TestConfig.LoadConfiguration();
 
@@ -22,16 +22,17 @@ namespace TrelloApiDemo.Tests
             _client = new TrelloClient();
 
             // Create board for list tests
-            _boardId = _client.CreateBoard("ListTestBoard_" + Guid.NewGuid()).Data?.Id ?? throw new InvalidOperationException("Board ID could not be retrieved.");
+            var response = await _client.CreateBoardAsync("ListTestBoard_" + Guid.NewGuid());
+            _boardId = response.Data?.Id ?? throw new InvalidOperationException("Board ID could not be retrieved.");
         }
 
         [TestMethod]
         [DynamicData(nameof(ListNameCases), DynamicDataSourceType.Method, DynamicDataDisplayName = nameof(GetTestDisplayName))]
-        public void CreateList_ShouldReturnValidList(string testCase, string listName)
+        public async Task CreateList_ShouldReturnValidListAsync(string testCase, string listName)
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateList(listName, _boardId ?? throw new ArgumentNullException(nameof(_boardId)));
+            var response = await _client.CreateListAsync(listName, _boardId ?? throw new ArgumentNullException(nameof(_boardId)));
 
             Assert.AreEqual(200, (int)response.StatusCode, "List creation failed");
             Assert.IsNotNull(response.Data, "List response data is null");
@@ -54,33 +55,33 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void CreateList_WithEmptyName_ShouldFail()
+        public async Task CreateList_WithEmptyName_ShouldFailAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateList("", _boardId ?? throw new ArgumentNullException(nameof(_boardId)));
+            var response = await _client.CreateListAsync("", _boardId ?? throw new ArgumentNullException(nameof(_boardId)));
             
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for empty name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "List ID should be null for empty name");
-            Assert.IsTrue(response.Content?.Equals("invalid value for name"), "Expected error message for invalid list name");
+            Assert.IsTrue(response.Content.Equals("invalid value for name"), "Expected error message for invalid list name");
         }
 
         [TestMethod]
-        public void CreateList_WithNullName_ShouldFail()
+        public async Task CreateList_WithNullName_ShouldFailAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateList(null, _boardId ?? throw new ArgumentNullException(nameof(_boardId)));
+            var response = await _client.CreateListAsync(null, _boardId ?? throw new ArgumentNullException(nameof(_boardId)));
 
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for null name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "List ID should be null for null name");
-            Assert.IsTrue(response.Content?.Equals("invalid value for name"), "Expected error message for null list name");
+            Assert.IsTrue(response.Content.Equals("invalid value for name"), "Expected error message for null list name");
         }
 
         [TestCleanup]
-        public void CleanupBoard()
+        public async Task CleanupBoardAsync()
         {
             if (!string.IsNullOrEmpty(_boardId))
             {
@@ -88,7 +89,7 @@ namespace TrelloApiDemo.Tests
                 deleteRequest.AddQueryParameter("key", Config.Key);
                 deleteRequest.AddQueryParameter("token", Config.Token);
 
-                _client?.SendRequest(deleteRequest);
+                await _client.SendRequestAsync(deleteRequest);
             }
         }
 
@@ -100,4 +101,3 @@ namespace TrelloApiDemo.Tests
         }
     }
 }
-

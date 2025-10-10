@@ -13,7 +13,7 @@ namespace TrelloApiDemo.Tests
         private string? _listId;
 
         [TestInitialize]
-        public void Setup()
+        public async Task SetupAsync()
         {
             var config = TestConfig.LoadConfiguration();
             Config.Key = config["Trello:Key"] ?? throw new InvalidOperationException("Trello:Key is missing in configuration.");
@@ -22,18 +22,20 @@ namespace TrelloApiDemo.Tests
 
             _client = new TrelloClient();
 
-            _boardId = _client.CreateBoard("CardTestBoard_" + Guid.NewGuid()).Data?.Id ?? throw new InvalidOperationException("Board creation failed");
+            var responseBoard = await _client.CreateBoardAsync("ListTestBoard_" + Guid.NewGuid());
+            _boardId = responseBoard.Data?.Id ?? throw new InvalidOperationException("Board creation failed");
 
-            _listId = _client.CreateList("CardTestList", _boardId).Data?.Id ?? throw new InvalidOperationException("List creation failed");
+            var responseList = await _client.CreateListAsync("CardTestList", _boardId);
+            _listId = responseList.Data?.Id ?? throw new InvalidOperationException("List creation failed");
         }
 
         [TestMethod]
         [DynamicData(nameof(CardNameCases), DynamicDataSourceType.Method, DynamicDataDisplayName = nameof(GetTestDisplayName))]
-        public void CreateCard_ShouldReturnValidCard(string testCase, string cardName)
+        public async Task CreateCard_ShouldReturnValidCardAsync(string testCase, string cardName)
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateCard(cardName, _listId ?? throw new ArgumentNullException(nameof(_listId)));
+            var response = await _client.CreateCardAsync(cardName, _listId ?? throw new ArgumentNullException(nameof(_listId)));
 
             Assert.AreEqual(200, (int)response.StatusCode, "Card creation failed");
             Assert.IsNotNull(response.Data, "Card response data is null");
@@ -57,11 +59,11 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void CreateCard_WithNullName_ShouldReturnValidCardWithEmtyName()
+        public async Task CreateCard_WithNullName_ShouldReturnValidCardWithEmtyNameAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var response = _client.CreateCard(null, _listId ?? throw new ArgumentNullException(nameof(_listId)));
+            var response = await _client.CreateCardAsync(null, _listId ?? throw new ArgumentNullException(nameof(_listId)));
             Console.WriteLine("Response: " + response);
             Console.WriteLine("Data: " + response.Data);
             Console.WriteLine("Response: " + response.Content);
@@ -74,13 +76,13 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void CreateCard_WithDescriptionAndDueDate_ShouldReturnValidCard()
+        public async Task CreateCard_WithDescriptionAndDueDate_ShouldReturnValidCardAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
             var dueDate = DateTime.UtcNow.AddDays(2).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
-            var response = _client.CreateCard("CardWithDueDate", _listId!, "This is a test card", dueDate);
+            var response = await _client.CreateCardAsync("CardWithDueDate", _listId!, "This is a test card", dueDate);
             var card = _client.Deserialize<Card>(response);
 
             var expectedDueDate = DateTime.Parse(dueDate);
@@ -95,12 +97,12 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void UpdateCard_ShouldModifyNameDescriptionAndDueDate()
+        public async Task UpdateCard_ShouldModifyNameDescriptionAndDueDateAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
             var originalDueDate = DateTime.UtcNow.AddDays(2).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
-            var createResponse = _client.CreateCard("OriginalName", _listId!, "Original description", originalDueDate);
+            var createResponse = await _client.CreateCardAsync("OriginalName", _listId!, "Original description", originalDueDate);
             var card = _client.Deserialize<Card>(createResponse);
             var cardId = card?.Id ?? throw new InvalidOperationException("Card ID is missing");
 
@@ -108,7 +110,7 @@ namespace TrelloApiDemo.Tests
             var newDescription = "Updated description";
             var newDueDate = DateTime.UtcNow.AddDays(5).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
-            var updateResponse = _client.UpdateCard(cardId, newName, newDescription, newDueDate);
+            var updateResponse = await _client.UpdateCardAsync(cardId, newName, newDescription, newDueDate);
             var updatedCard = _client.Deserialize<Card>(updateResponse);
 
             Assert.AreEqual(200, (int)updateResponse.StatusCode);
@@ -121,16 +123,16 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void UpdateCard_ShouldModifyOnlyName()
+        public async Task UpdateCard_ShouldModifyOnlyNameAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var createResponse = _client.CreateCard("InitialName", _listId!, "Initial description");
+            var createResponse = await _client.CreateCardAsync("InitialName", _listId!, "Initial description");
             var card = _client.Deserialize<Card>(createResponse);
             var cardId = card?.Id ?? throw new InvalidOperationException("Card ID is missing");
 
             var newName = "UpdatedName";
-            var updateResponse = _client.PartialCardUpdate(cardId, newName);
+            var updateResponse = await _client.PartialCardUpdateAsync(cardId, newName);
             var updatedCard = _client.Deserialize<Card>(updateResponse);
 
             Assert.AreEqual(200, (int)updateResponse.StatusCode);
@@ -139,16 +141,16 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void UpdateCard_ShouldModifyOnlyDescription()
+        public async Task UpdateCard_ShouldModifyOnlyDescriptionAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var createResponse = _client.CreateCard("InitialName", _listId!, "Initial description");
+            var createResponse = await _client.CreateCardAsync("InitialName", _listId!, "Initial description");
             var card = _client.Deserialize<Card>(createResponse);
             var cardId = card?.Id ?? throw new InvalidOperationException("Card ID is missing");
 
             var newDescription = "Updated description";
-            var updateResponse = _client.PartialCardUpdate(cardId, null, newDescription);
+            var updateResponse = await _client.PartialCardUpdateAsync(cardId, null, newDescription);
             var updatedCard = _client.Deserialize<Card>(updateResponse);
 
             Assert.AreEqual(200, (int)updateResponse.StatusCode);
@@ -157,26 +159,26 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void UpdateCard_WhenDescriptionIsSetToEmpty_ShouldClearDescription()
+        public async Task UpdateCard_WhenDescriptionIsSetToEmpty_ShouldClearDescriptionAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
             var initialName = "CardToClearDesc";
-            var createResponse = _client.CreateCard(initialName, _listId!, "Temporary description");
+            var createResponse = await _client.CreateCardAsync(initialName, _listId!, "Temporary description");
             var card = _client.Deserialize<Card>(createResponse);
             var cardId = card?.Id ?? throw new InvalidOperationException("Card ID is missing");
 
-            var updateResponse = _client.PartialCardUpdate(cardId, null, "");
+            var updateResponse = await _client.PartialCardUpdateAsync(cardId, null, "");
             var updatedCard = _client.Deserialize<Card>(updateResponse);
 
             Assert.AreEqual(200, (int)updateResponse.StatusCode);
             Assert.AreEqual(initialName, updatedCard?.Name, "Name should remain unchanged");
             Assert.AreEqual("", updatedCard?.Description, "Description should be cleared");
-            Assert.IsFalse(updatedCard?.Badges?.HasDescription, "Badges should report no description");
+            Assert.IsFalse((bool)updatedCard?.Badges?.HasDescription, "Badges should report no description");
         }
 
         [TestMethod]
-        public void UpdateCard_WhenDueDateIsSetToEmpty_ShouldClearDueDate()
+        public async Task UpdateCard_WhenDueDateIsSetToEmpty_ShouldClearDueDateAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
@@ -184,11 +186,11 @@ namespace TrelloApiDemo.Tests
             var initialDescription = "Card with due date";
             var initialDueDate = DateTime.UtcNow.AddDays(3).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
-            var createResponse = _client.CreateCard(initialName, _listId!, initialDescription, initialDueDate);
+            var createResponse = await _client.CreateCardAsync(initialName, _listId!, initialDescription, initialDueDate);
             var card = _client.Deserialize<Card>(createResponse);
             var cardId = card?.Id ?? throw new InvalidOperationException("Card ID is missing");
 
-            var updateResponse = _client.PartialCardUpdate(cardId, null, null, "");
+            var updateResponse = await _client.PartialCardUpdateAsync(cardId, null, null, "");
             var updatedCard = _client.Deserialize<Card>(updateResponse);
 
             Assert.AreEqual(200, (int)updateResponse.StatusCode);
@@ -199,28 +201,28 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        public void DeleteCard_ShouldRemoveCardSuccessfully()
+        public async Task DeleteCard_ShouldRemoveCardSuccessfullyAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var createResponse = _client.CreateCard("CardToDelete", _listId!, "This card will be deleted");
+            var createResponse = await _client.CreateCardAsync("CardToDelete", _listId!, "This card will be deleted");
             var card = _client.Deserialize<Card>(createResponse);
             var cardId = card?.Id ?? throw new InvalidOperationException("Card ID is missing");
 
-            var deleteResponse = _client.DeleteCard(cardId);
+            var deleteResponse = await _client.DeleteCardAsync(cardId);
             Assert.AreEqual(200, (int)deleteResponse.StatusCode, "Card deletion failed");
 
             var getRequest = new RestRequest($"cards/{cardId}", Method.Get);
             getRequest.AddQueryParameter("key", Config.Key);
             getRequest.AddQueryParameter("token", Config.Token);
 
-            var getResponse = _client.SendRequest<Card>(getRequest);
+            var getResponse = await _client.SendRequestAsync<Card>(getRequest);
 
             Assert.AreEqual(404, (int)getResponse.StatusCode, "Card still exists after deletion");
         }
 
         [TestCleanup]
-        public void CleanupBoard()
+        public async Task CleanupBoardAsync()
         {
             if (!string.IsNullOrEmpty(_boardId))
             {
@@ -228,7 +230,7 @@ namespace TrelloApiDemo.Tests
                 deleteRequest.AddQueryParameter("key", Config.Key);
                 deleteRequest.AddQueryParameter("token", Config.Token);
 
-                _client?.SendRequest(deleteRequest);
+                await _client.SendRequestAsync(deleteRequest);
             }
         }
 
