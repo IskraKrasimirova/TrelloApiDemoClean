@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 6 * * *'  # Всеки ден в 09:00 GMT+3
 
 jobs:
   build-and-test:
@@ -19,7 +19,7 @@ jobs:
     - name: 🛠️ Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '8.0.x'
 
     - name: 📦 Restore dependencies
       run: dotnet restore
@@ -27,11 +27,21 @@ jobs:
     - name: 🧱 Build project
       run: dotnet build --configuration Release
 
+    - name: 📝 Create appsettings.json from secrets
+      run: |
+        echo { > TrelloApiDemo.Tests/appsettings.json
+        echo   \"Trello\": { >> TrelloApiDemo.Tests/appsettings.json
+        echo     \"Key\": \"${{ secrets.TRELLO_API_KEY }}\", >> TrelloApiDemo.Tests/appsettings.json
+        echo     \"Token\": \"${{ secrets.TRELLO_API_TOKEN }}\", >> TrelloApiDemo.Tests/appsettings.json
+        echo     \"BaseUrl\": \"${{ secrets.TRELLO_BASE_URL }}\" >> TrelloApiDemo.Tests/appsettings.json
+        echo   } >> TrelloApiDemo.Tests/appsettings.json
+        echo } >> TrelloApiDemo.Tests/appsettings.json
+
     - name: 🧪 Run MSTest
-      continue-on-error: true
       run: dotnet test --configuration Release --logger "trx" --results-directory "TestResults"
 
     - name: 📤 Upload test results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: TestResults
