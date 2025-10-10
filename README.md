@@ -1,7 +1,7 @@
 ﻿# TrelloApiDemo
 ## 🔗 Trello API Integration
 
-This project uses the official [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/) to interact with boards, lists, and cards programmatically.
+This project demonstrates automated interaction with Trello boards, lists, and cards using the official [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/). It is designed for testing and learning purposes, with a focus on clean structure, secure configuration, and reproducible results.
 
 ### 🛠️ Authentication
 
@@ -29,3 +29,24 @@ Create a local `appsettings.json` file:
     "BaseUrl": "https://api.trello.com/1/"
   }
 }
+
+### ✅ Test Coverage
+The project includes automated tests for:
+
+Board creation and retrieval
+List creation within boards
+Card creation, update, and deletion
+Edge cases: empty fields, invalid IDs, partial updates
+
+Tests are written using MSTest and are extended with DynamicData for broader coverage.
+
+### 🚀 Running the Tests
+Clone the repository
+Add your appsettings.json file
+Run tests via Visual Studio Test Explorer or CLI:
+dotnet test
+
+### 🧰 Tools & Technologies
+C# – Core language for test implementation
+RestSharp – HTTP client for interacting with Trello API
+MSTest – Unit testing framework
