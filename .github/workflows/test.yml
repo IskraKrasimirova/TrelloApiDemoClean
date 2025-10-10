@@ -40,8 +40,12 @@ jobs:
 
           $json | Out-File -FilePath "TrelloApiDemo.Tests/appsettings.json" -Encoding utf8
 
-      - name: 🧪 Run MSTest
-        run: dotnet test --configuration Release --logger "trx" --results-directory "TestResults"
+      - name: 🔍 Print appsettings.json for verification
+        shell: pwsh
+        run: Get-Content TrelloApiDemo.Tests/appsettings.json
+
+      - name: 🧪 Run MSTest with explicit project and framework
+        run: dotnet test TrelloApiDemo.Tests/TrelloApiDemo.Tests.csproj --configuration Release --framework net8.0 --logger "trx" --results-directory "TestResults"
 
       - name: 📤 Upload test results
         if: always()
