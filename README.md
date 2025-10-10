@@ -29,24 +29,26 @@ Create a local `appsettings.json` file:
     "BaseUrl": "https://api.trello.com/1/"
   }
 }
+```
 
 ### ✅ Test Coverage
 The project includes automated tests for:
 
-Board creation and retrieval
-List creation within boards
-Card creation, update, and deletion
-Edge cases: empty fields, invalid IDs, partial updates
+* Board creation and retrieval
+* List creation within boards
+* Card creation, update, and deletion
+* Edge cases: empty fields, invalid IDs, partial updates
 
 Tests are written using MSTest and are extended with DynamicData for broader coverage.
 
 ### 🚀 Running the Tests
-Clone the repository
-Add your appsettings.json file
-Run tests via Visual Studio Test Explorer or CLI:
-dotnet test
+* Clone the repository
+* Add your appsettings.json file
+* Run tests via Visual Studio Test Explorer or CLI:
+```dotnet test
+``` 
 
 ### 🧰 Tools & Technologies
-C# – Core language for test implementation
-RestSharp – HTTP client for interacting with Trello API
-MSTest – Unit testing framework
+* C# – Core language for test implementation
+* RestSharp – HTTP client for interacting with Trello API
+* MSTest – Unit testing framework
