@@ -6,43 +6,46 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 6 * * *'  # Всеки ден в 09:00 GMT+3
+    - cron: '0 6 * * *'
 
 jobs:
   build-and-test:
     runs-on: windows-latest
 
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-    - name: 🛠️ Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+      - name: 🛠️ Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: 📦 Restore dependencies
-      run: dotnet restore
+      - name: 📦 Restore dependencies
+        run: dotnet restore
 
-    - name: 🧱 Build project
-      run: dotnet build --configuration Release
+      - name: 🧱 Build project
+        run: dotnet build --configuration Release
 
-    - name: 📝 Create appsettings.json from secrets
-      run: |
-        echo { > TrelloApiDemo.Tests/appsettings.json
-        echo   \"Trello\": { >> TrelloApiDemo.Tests/appsettings.json
-        echo     \"Key\": \"${{ secrets.TRELLO_API_KEY }}\", >> TrelloApiDemo.Tests/appsettings.json
-        echo     \"Token\": \"${{ secrets.TRELLO_API_TOKEN }}\", >> TrelloApiDemo.Tests/appsettings.json
-        echo     \"BaseUrl\": \"${{ secrets.TRELLO_BASE_URL }}\" >> TrelloApiDemo.Tests/appsettings.json
-        echo   } >> TrelloApiDemo.Tests/appsettings.json
-        echo } >> TrelloApiDemo.Tests/appsettings.json
+      - name: 📝 Create appsettings.json from secrets
+        shell: pwsh
+        run: |
+          $json = @{
+            Trello = @{
+              Key     = "${{ secrets.TRELLO_API_KEY }}"
+              Token   = "${{ secrets.TRELLO_API_TOKEN }}"
+              BaseUrl = "${{ secrets.TRELLO_API_BASE_URL }}"
+            }
+          } | ConvertTo-Json -Depth 3
 
-    - name: 🧪 Run MSTest
-      run: dotnet test --configuration Release --logger "trx" --results-directory "TestResults"
+          $json | Out-File -FilePath "TrelloApiDemo.Tests/appsettings.json" -Encoding utf8
 
-    - name: 📤 Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: TestResults
-        path: TestResults
+      - name: 🧪 Run MSTest
+        run: dotnet test --configuration Release --logger "trx" --results-directory "TestResults"
+
+      - name: 📤 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: TestResults
