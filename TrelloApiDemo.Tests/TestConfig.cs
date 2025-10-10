@@ -7,8 +7,8 @@ namespace TrelloApiDemo.Tests
         public static IConfigurationRoot LoadConfiguration()
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                 .SetBasePath(Directory.GetCurrentDirectory()) 
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             return builder.Build();
         }
