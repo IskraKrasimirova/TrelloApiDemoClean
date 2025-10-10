@@ -45,7 +45,8 @@ Tests are written using MSTest and are extended with DynamicData for broader cov
 * Clone the repository
 * Add your appsettings.json file
 * Run tests via Visual Studio Test Explorer or CLI:
-```dotnet test
+```bash
+dotnet test
 ``` 
 
 ### 🧰 Tools & Technologies
