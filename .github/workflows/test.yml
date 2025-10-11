@@ -54,7 +54,7 @@ jobs:
         run: Get-Content TrelloApiDemo.Tests/appsettings.json
 
       - name: 🧪 Run MSTest with explicit project and framework
-        run: dotnet test TrelloApiDemo.Tests/TrelloApiDemo.Tests.csproj --configuration Release --framework net8.0 --logger "trx" --results-directory "TestResults"
+        run: dotnet test TrelloApiDemo.Tests/TrelloApiDemo.Tests.csproj --configuration Release --framework net8.0 --logger "trx;LogFileName=test-results.trx" --results-directory "TestResults"
 
       - name: 📤 Upload test results
         if: always()
@@ -66,13 +66,13 @@ jobs:
       - name: 📊 Test Summary
         uses: test-summary/action@v2
         with:
-          paths: "TestResults/*.trx"
+          paths: "TestResults/test-results.trx"
         if: always()
 
       - name: 📄 Generate HTML Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
         with:
-          reports: "TestResults/*.trx"
+          reports: "TestResults/test-results.trx"
           targetdir: "TestResults/html"
           reporttypes: "Html"
         if: always()
@@ -82,4 +82,12 @@ jobs:
         with:
           name: TestReport
           path: TestResults/html
+        if: always()
+
+      - name: 🌍 Publish report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: TestResults/html
+          publish_branch: gh-pages
         if: always()
