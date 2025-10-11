@@ -1,5 +1,7 @@
 ﻿## 🔗 Trello API Integration
 
+![CI Status](https://github.com/IskraKrasimirova/TrelloApiDemoClean/actions/workflows/test.yml/badge.svg)
+
 This project demonstrates automated interaction with Trello boards, lists, and cards using the official [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/). It is designed for testing and learning purposes, with a focus on clean structure, secure configuration, and reproducible results.
 
 ### 🛠️ Authentication
@@ -24,8 +26,7 @@ Create a local `appsettings.json` file:
 {
   "Trello": {
     "Key": "your-key-here",
-    "Token": "your-token-here",
-    "BaseUrl": "https://api.trello.com/1/"
+    "Token": "your-token-here"
   }
 }
 ```
@@ -51,4 +52,4 @@ dotnet test
 ### 🧰 Tools & Technologies
 * C# – Core language for test implementation
 * RestSharp – HTTP client for interacting with Trello API
-* MSTest – Unit testing framework
+* MSTest – Testing framework
