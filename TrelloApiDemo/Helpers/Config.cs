@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace TrelloApiDemo.Helpers
+﻿namespace TrelloApiDemo.Helpers
 {
     public static class Config
     {
