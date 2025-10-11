@@ -62,11 +62,3 @@ jobs:
         with:
           name: TestResults
           path: TestResults
-
-      - name: 📊 Test Summary
-        uses: test-summary/action@v2
-        with:
-          paths: "TestResults/test-results.trx"
-        if: always()
-
-     
