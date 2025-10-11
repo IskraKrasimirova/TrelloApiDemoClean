@@ -69,25 +69,4 @@ jobs:
           paths: "TestResults/test-results.trx"
         if: always()
 
-      - name: 📄 Generate HTML Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
-        with:
-          reports: "TestResults/test-results.trx"
-          targetdir: "TestResults/html"
-          reporttypes: "Html"
-        if: always()
-
-      - name: 📤 Upload HTML Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: TestReport
-          path: TestResults/html
-        if: always()
-
-      - name: 🌍 Publish report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: TestResults/html
-          publish_branch: gh-pages
-        if: always()
+     

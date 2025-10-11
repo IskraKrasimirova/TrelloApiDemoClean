@@ -2,8 +2,6 @@
 
 ![CI Status](https://github.com/IskraKrasimirova/TrelloApiDemoClean/actions/workflows/test.yml/badge.svg)
 
-📄 [View latest test report](https://IskraKrasimirova.github.io/TrelloApiDemoClean/)
-
 This project demonstrates automated interaction with Trello boards, lists, and cards using the official [Trello REST API](https://developer.atlassian.com/cloud/trello/rest/). It is designed for testing and learning purposes, with a focus on clean structure, secure configuration, and reproducible results.
 
 ### 🛠️ Authentication
