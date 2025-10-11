@@ -32,8 +32,7 @@ jobs:
         shell: pwsh
         run: |
           if ([string]::IsNullOrWhiteSpace("${{ secrets.TRELLO_API_KEY }}") -or
-              [string]::IsNullOrWhiteSpace("${{ secrets.TRELLO_API_TOKEN }}") -or
-              [string]::IsNullOrWhiteSpace("${{ secrets.TRELLO_BASE_URL }}")) {
+              [string]::IsNullOrWhiteSpace("${{ secrets.TRELLO_API_TOKEN }}") {
               Write-Error "❌ One or more Trello secrets are missing or empty. Aborting pipeline."
               exit 1
           }
@@ -45,7 +44,6 @@ jobs:
             Trello = @{
               Key     = "${{ secrets.TRELLO_API_KEY }}"
               Token   = "${{ secrets.TRELLO_API_TOKEN }}"
-              BaseUrl = "${{ secrets.TRELLO_API_BASE_URL }}"
             }
           } | ConvertTo-Json -Depth 3
 

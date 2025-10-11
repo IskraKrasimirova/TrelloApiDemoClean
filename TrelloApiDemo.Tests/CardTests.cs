@@ -18,7 +18,6 @@ namespace TrelloApiDemo.Tests
             var config = TestConfig.LoadConfiguration();
             Config.Key = config["Trello:Key"] ?? throw new InvalidOperationException("Trello:Key is missing in configuration.");
             Config.Token = config["Trello:Token"] ?? throw new InvalidOperationException("Trello:Token is missing in configuration.");
-            Config.BaseUrl = config["Trello:BaseUrl"] ?? throw new InvalidOperationException("Trello:BaseUrl is missing in configuration.");
 
             _client = new TrelloClient();
 
