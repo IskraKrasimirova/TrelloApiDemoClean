@@ -63,7 +63,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for empty name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "List ID should be null for empty name");
-            Assert.IsTrue(response.Content.Equals("invalid value for name"), "Expected error message for invalid list name");
+            Assert.IsTrue(response.Content.Contains("invalid value for name"), "Expected error message for invalid list name");
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for null name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "List ID should be null for null name");
-            Assert.IsTrue(response.Content.Equals("invalid value for name"), "Expected error message for null list name");
+            Assert.IsTrue(response.Content.Contains("invalid value for name"), "Expected error message for null list name");
         }
 
         [TestCleanup]

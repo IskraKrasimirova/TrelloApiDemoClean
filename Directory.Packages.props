@@ -1,7 +1,7 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0">
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="3.0.0">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
