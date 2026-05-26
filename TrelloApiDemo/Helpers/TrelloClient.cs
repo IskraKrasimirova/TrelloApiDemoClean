@@ -53,6 +53,7 @@ namespace TrelloApiDemo.Helpers
 
         public async Task<RestResponse<Board>> CreateBoardAsync(string? name)
         {
+            EnforceRateLimit();
             var request = new RestRequest("boards", Method.Post);
             request.AddQueryParameter("name", name);
             request.AddQueryParameter("idOrganization", Config.WorkspaceId);
