@@ -24,7 +24,7 @@ namespace TrelloApiDemo.Tests
                 ];
 
         [TestInitialize]
-        public void Setup()
+        public async Task SetupAsync()
         {
             var configuration = TestConfig.LoadConfiguration();
 
@@ -32,6 +32,24 @@ namespace TrelloApiDemo.Tests
             Config.Token = configuration["Trello:Token"] ?? throw new InvalidOperationException("Trello:Token is missing in configuration.");
 
             _client = new TrelloClient();
+
+            var request = new RestRequest("members/me/boards", Method.Get);
+            request.AddQueryParameter("key", Config.Key);
+            request.AddQueryParameter("token", Config.Token);
+
+            var response = await _client.SendRequestAsync<List<Board>>(request);
+
+            if (response.Data != null)
+            {
+                foreach (var board in response.Data)
+                {
+                    if (!string.IsNullOrEmpty(board.Name) &&
+                        (board.Name.StartsWith("Smoke_") || TestBoardNames.Contains(board.Name)))
+                    {
+                        await _client.DeleteBoardAsync(board.Id);
+                    }
+                }
+            }
         }
 
         [TestMethod]
@@ -64,9 +82,6 @@ namespace TrelloApiDemo.Tests
         public async Task CreateAndGetBoard_ShouldReturnSameBoardAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
-
-            // Trello throttling fix
-            await Task.Delay(2000, TestContext.CancellationToken);
 
             var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
 
@@ -112,30 +127,6 @@ namespace TrelloApiDemo.Tests
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "Board ID should be null for null name");
             Assert.Contains("invalid value for name", response.Content, "Expected error message for null board name");
-        }
-
-        [ClassCleanup]
-        public static void CleanupBoards()
-        {
-            var client = new TrelloClient();
-
-            var request = new RestRequest("members/me/boards", Method.Get);
-            request.AddQueryParameter("key", Config.Key);
-            request.AddQueryParameter("token", Config.Token);
-
-            var response = client.SendRequestAsync<List<Board>>(request).GetAwaiter().GetResult();
-
-            if (response.Data != null)
-            {
-                foreach (var board in response.Data)
-                {
-                    //if (board.Desc == "Created by automated test")
-                    if (!string.IsNullOrEmpty(board.Name) && (board.Name.StartsWith("Smoke_") || TestBoardNames.Contains(board.Name)))
-                    {
-                        client.DeleteBoardAsync(board.Id).GetAwaiter().GetResult();
-                    }
-                }
-            }
         }
 
         public static string GetTestDisplayName(MethodInfo methodInfo, object[] values)
