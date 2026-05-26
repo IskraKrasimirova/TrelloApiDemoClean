@@ -84,6 +84,8 @@ namespace TrelloApiDemo.Tests
 
             Assert.AreEqual(200, (int)getResponse.StatusCode);
             Assert.AreEqual(boardId, getResponse.Data?.Id);
+
+            await _client.DeleteBoardAsync(boardId);
         }
 
         [TestMethod]
@@ -130,11 +132,7 @@ namespace TrelloApiDemo.Tests
                     //if (board.Desc == "Created by automated test")
                     if (!string.IsNullOrEmpty(board.Name) && (board.Name.StartsWith("Smoke_") || TestBoardNames.Contains(board.Name)))
                     {
-                        var deleteRequest = new RestRequest($"boards/{board.Id}", Method.Delete);
-                        deleteRequest.AddQueryParameter("key", Config.Key);
-                        deleteRequest.AddQueryParameter("token", Config.Token);
-
-                        client.SendRequestAsync(deleteRequest).GetAwaiter().GetResult();
+                        client.DeleteBoardAsync(board.Id).GetAwaiter().GetResult();
                     }
                 }
             }

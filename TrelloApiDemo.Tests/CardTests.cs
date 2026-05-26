@@ -6,6 +6,7 @@ using TrelloApiDemo.Models;
 namespace TrelloApiDemo.Tests
 {
     [TestClass]
+    [DoNotParallelize]
     public class CardTests
     {
         private TrelloClient? _client;
@@ -225,11 +226,7 @@ namespace TrelloApiDemo.Tests
         {
             if (!string.IsNullOrEmpty(_boardId))
             {
-                var deleteRequest = new RestRequest($"boards/{_boardId}", Method.Delete);
-                deleteRequest.AddQueryParameter("key", Config.Key);
-                deleteRequest.AddQueryParameter("token", Config.Token);
-
-                await _client.SendRequestAsync(deleteRequest);
+                await _client.DeleteBoardAsync(_boardId);
             }
         }
 

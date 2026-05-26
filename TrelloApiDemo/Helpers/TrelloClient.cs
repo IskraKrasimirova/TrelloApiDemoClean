@@ -139,6 +139,14 @@ namespace TrelloApiDemo.Helpers
             return await _client.ExecuteAsync(request);
         }
 
+        public async Task DeleteBoardAsync(string boardId)
+        {
+            EnforceRateLimit();
+            var request = new RestRequest($"boards/{boardId}", Method.Delete);
+            AddAuth(request);
+            await _client.ExecuteAsync(request);
+        }
+
         private static void AddAuth(RestRequest request)
         {
             request.AddQueryParameter("key", Config.Key);
