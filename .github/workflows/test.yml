@@ -44,7 +44,6 @@ jobs:
             Trello = @{
               Key   = "${{ secrets.TRELLO_API_KEY }}"
               Token = "${{ secrets.TRELLO_API_TOKEN }}"
-              WorkspaceId = "${{ secrets.TRELLO_WORKSPACE_ID }}"
             }
           } | ConvertTo-Json -Depth 3
 
