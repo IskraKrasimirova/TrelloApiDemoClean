@@ -65,13 +65,12 @@ namespace TrelloApiDemo.Tests
         public async Task CreateAndGetBoard_ShouldReturnSameBoardAsync()
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
+            // Trello throttling fix
+            await Task.Delay(1000, TestContext.CancellationToken);
 
             var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
 
             Assert.AreEqual(200, (int)createResponse.StatusCode);
-
-            // Trello throttling fix
-            await Task.Delay(500, TestContext.CancellationToken);
 
             var boardId = createResponse.Data?.Id;
             Assert.IsNotNull(boardId, "Board ID is null after creation.");

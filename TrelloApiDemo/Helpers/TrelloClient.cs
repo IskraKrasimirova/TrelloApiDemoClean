@@ -10,7 +10,7 @@ namespace TrelloApiDemo.Helpers
         private readonly RestClient _client;
         private static readonly object _rateLock = new();
         private static DateTime _lastRequestTime = DateTime.MinValue;
-        private static readonly TimeSpan _minInterval = TimeSpan.FromMilliseconds(200);
+        private static readonly TimeSpan _minInterval = TimeSpan.FromMilliseconds(300);
 
         public TrelloClient()
         {
