@@ -70,6 +70,9 @@ namespace TrelloApiDemo.Tests
 
             Assert.AreEqual(200, (int)createResponse.StatusCode);
 
+            // Trello throttling fix
+            await Task.Delay(500, TestContext.CancellationToken);
+
             var boardId = createResponse.Data?.Id;
             Assert.IsNotNull(boardId, "Board ID is null after creation.");
 
@@ -141,5 +144,7 @@ namespace TrelloApiDemo.Tests
 
             return $"{methodInfo.Name}(Case: {name})";
         }
+
+        public TestContext TestContext { get; set; }
     }
 }

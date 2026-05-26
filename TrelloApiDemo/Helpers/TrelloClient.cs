@@ -53,22 +53,12 @@ namespace TrelloApiDemo.Helpers
 
         public async Task<RestResponse<Board>> CreateBoardAsync(string? name)
         {
-            Console.WriteLine($"NAME RECEIVED: '{name}'");
-            Console.WriteLine($"ENCODED NAME: '{Uri.EscapeDataString(name ?? "")}'");
-
             EnforceRateLimit();
             var request = new RestRequest("boards", Method.Post);
             request.AddQueryParameter("name", name);
             request.AddQueryParameter("idOrganization", Config.WorkspaceId);
             AddAuth(request);
             //request.AddQueryParameter("desc", "Created by automated test");
-
-            Console.WriteLine("---- REQUEST PARAMETERS ----");
-            foreach (var p in request.Parameters)
-            {
-                Console.WriteLine($"{p.Name} = '{p.Value}'");
-            }
-            Console.WriteLine("----------------------------");
 
             return await _client.ExecuteAsync<Board>(request);
         }
