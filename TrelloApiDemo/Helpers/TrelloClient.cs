@@ -63,6 +63,13 @@ namespace TrelloApiDemo.Helpers
             AddAuth(request);
             //request.AddQueryParameter("desc", "Created by automated test");
 
+            Console.WriteLine("---- REQUEST PARAMETERS ----");
+            foreach (var p in request.Parameters)
+            {
+                Console.WriteLine($"{p.Name} = '{p.Value}'");
+            }
+            Console.WriteLine("----------------------------");
+
             return await _client.ExecuteAsync<Board>(request);
         }
 
