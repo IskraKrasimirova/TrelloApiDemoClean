@@ -58,7 +58,7 @@ namespace TrelloApiDemo.Helpers
             request.AddQueryParameter("name", name);
             request.AddQueryParameter("idOrganization", Config.WorkspaceId);
             AddAuth(request);
-            request.AddQueryParameter("desc", "Created by automated test");
+            //request.AddQueryParameter("desc", "Created by automated test");
 
             return await _client.ExecuteAsync<Board>(request);
         }

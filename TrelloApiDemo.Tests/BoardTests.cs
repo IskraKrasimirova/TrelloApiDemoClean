@@ -11,6 +11,17 @@ namespace TrelloApiDemo.Tests
     public class BoardTests
     {
         private TrelloClient? _client;
+        private static readonly HashSet<string> TestBoardNames =
+                [
+                    "A", "ThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLength",
+                    "demoboard",
+                    "TESTBOARD",
+                    "DEMOboard",
+                    "123456",
+                    "!@#$%^&*()",
+                    "ТестоваДъска",
+                    "Board_№1"
+                ];
 
         [TestInitialize]
         public void Setup()
@@ -89,7 +100,7 @@ namespace TrelloApiDemo.Tests
             Assert.IsNotNull(_client, "_client is not initialized.");
 
             var response = await _client.CreateBoardAsync(null);
-            
+
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for null name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "Board ID should be null for null name");
@@ -111,7 +122,8 @@ namespace TrelloApiDemo.Tests
             {
                 foreach (var board in response.Data)
                 {
-                    if (board.Desc == "Created by automated test")
+                    //if (board.Desc == "Created by automated test")
+                    if (!string.IsNullOrEmpty(board.Name) && (board.Name.StartsWith("Smoke_") || TestBoardNames.Contains(board.Name)))
                     {
                         var deleteRequest = new RestRequest($"boards/{board.Id}", Method.Delete);
                         deleteRequest.AddQueryParameter("key", Config.Key);
