@@ -66,7 +66,7 @@ namespace TrelloApiDemo.Tests
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
             // Trello throttling fix
-            await Task.Delay(1500, TestContext.CancellationToken);
+            await Task.Delay(2000, TestContext.CancellationToken);
 
             var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
 
