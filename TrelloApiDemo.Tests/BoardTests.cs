@@ -54,7 +54,9 @@ namespace TrelloApiDemo.Tests
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
+            //var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
+            var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid().ToString("N"));
+
             Assert.AreEqual(200, (int)createResponse.StatusCode);
 
             var boardId = createResponse.Data?.Id;
