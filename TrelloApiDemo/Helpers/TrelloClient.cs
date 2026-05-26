@@ -53,6 +53,9 @@ namespace TrelloApiDemo.Helpers
 
         public async Task<RestResponse<Board>> CreateBoardAsync(string? name)
         {
+            Console.WriteLine($"NAME RECEIVED: '{name}'");
+            Console.WriteLine($"ENCODED NAME: '{Uri.EscapeDataString(name ?? "")}'");
+
             EnforceRateLimit();
             var request = new RestRequest("boards", Method.Post);
             request.AddQueryParameter("name", name);
