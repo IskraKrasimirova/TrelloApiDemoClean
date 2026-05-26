@@ -19,6 +19,7 @@ namespace TrelloApiDemo.Tests
 
             Config.Key = configuration["Trello:Key"] ?? throw new InvalidOperationException("Trello:Key is missing in configuration.");
             Config.Token = configuration["Trello:Token"] ?? throw new InvalidOperationException("Trello:Token is missing in configuration.");
+            Config.WorkspaceId = configuration["Trello:WorkspaceId"] ?? throw new InvalidOperationException("Trello:WorkspaceId is missing.");
 
             _client = new TrelloClient();
         }
@@ -54,8 +55,7 @@ namespace TrelloApiDemo.Tests
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
 
-            //var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
-            var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid().ToString("N"));
+            var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
 
             Assert.AreEqual(200, (int)createResponse.StatusCode);
 
