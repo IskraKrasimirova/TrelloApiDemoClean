@@ -57,7 +57,7 @@ namespace TrelloApiDemo.Helpers
             var request = new RestRequest("boards", Method.Post);
             request.AddQueryParameter("name", name);
             AddAuth(request);
-            //request.AddQueryParameter("desc", "Created by automated test");
+            request.AddQueryParameter("desc", "Created by automated test");
 
             return await _client.ExecuteAsync<Board>(request);
         }

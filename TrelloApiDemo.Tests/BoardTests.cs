@@ -5,23 +5,11 @@ using TrelloApiDemo.Models;
 
 namespace TrelloApiDemo.Tests
 {
-
     [TestClass]
     [DoNotParallelize]
     public class BoardTests
     {
         private TrelloClient? _client;
-        private static readonly HashSet<string> TestBoardNames =
-                [
-                    "A", "ThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLengthThisIsAVeryLongBoardNameThatExceedsNormalLength",
-                    "demoboard",
-                    "TESTBOARD",
-                    "DEMOboard",
-                    "123456",
-                    "!@#$%^&*()",
-                    "ТестоваДъска",
-                    "Board_№1"
-                ];
 
         [TestInitialize]
         public async Task SetupAsync()
@@ -33,23 +21,32 @@ namespace TrelloApiDemo.Tests
 
             _client = new TrelloClient();
 
-            var request = new RestRequest("members/me/boards", Method.Get);
-            request.AddQueryParameter("key", Config.Key);
-            request.AddQueryParameter("token", Config.Token);
-
-            var response = await _client.SendRequestAsync<List<Board>>(request);
-
-            if (response.Data != null)
+            try
             {
-                foreach (var board in response.Data)
+                var request = new RestRequest("members/me/boards", Method.Get);
+                request.AddQueryParameter("key", Config.Key);
+                request.AddQueryParameter("token", Config.Token);
+
+                var response = await _client.SendRequestAsync<List<Board>>(request);
+
+                // Clean up any existing test boards before running tests
+                // Free plan allows only 10 boards
+                if (response.Data != null)
                 {
-                    if (!string.IsNullOrEmpty(board.Name) &&
-                        (board.Name.StartsWith("Smoke_") || TestBoardNames.Contains(board.Name)))
+                    foreach (var board in response.Data)
                     {
-                        await _client.DeleteBoardAsync(board.Id);
+                        if (board.Desc == "Created by automated test")
+                        {
+                            await _client.DeleteBoardAsync(board.Id);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Setup cleanup warning: {ex.Message}");
+            }
+
         }
 
         [TestMethod]
@@ -84,9 +81,6 @@ namespace TrelloApiDemo.Tests
             Assert.IsNotNull(_client, "_client is not initialized.");
 
             var createResponse = await _client.CreateBoardAsync("Smoke_" + Guid.NewGuid());
-
-            Console.WriteLine($"Status: {(int)createResponse.StatusCode}");
-            Console.WriteLine($"Content: {createResponse.Content}");
 
             Assert.AreEqual(200, (int)createResponse.StatusCode);
 
@@ -135,7 +129,5 @@ namespace TrelloApiDemo.Tests
 
             return $"{methodInfo.Name}(Case: {name})";
         }
-
-        public TestContext TestContext { get; set; }
     }
 }

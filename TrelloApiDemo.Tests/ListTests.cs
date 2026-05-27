@@ -84,7 +84,14 @@ namespace TrelloApiDemo.Tests
         {
             if (!string.IsNullOrEmpty(_boardId))
             {
-                await _client.DeleteBoardAsync(_boardId);
+                try
+                {
+                    await _client.DeleteBoardAsync(_boardId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Cleanup warning: failed to delete board {_boardId}. Error: {ex.Message}");
+                }
             }
         }
 
