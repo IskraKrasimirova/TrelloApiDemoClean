@@ -8,7 +8,7 @@ namespace TrelloApiDemo.Tests
     [TestClass]
     public class CardTests
     {
-        private TrelloClient? _client;
+        private TrelloClient _client = default!;
         private string? _boardId;
         private string? _listId;
 
@@ -29,7 +29,7 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        [DynamicData(nameof(CardNameCases), DynamicDataSourceType.Method, DynamicDataDisplayName = nameof(GetTestDisplayName))]
+        [DynamicData(nameof(CardNameCases), DynamicDataDisplayName = nameof(GetTestDisplayName))]
         public async Task CreateCard_ShouldReturnValidCardAsync(string testCase, string cardName)
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
@@ -173,7 +173,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreEqual(200, (int)updateResponse.StatusCode);
             Assert.AreEqual(initialName, updatedCard?.Name, "Name should remain unchanged");
             Assert.AreEqual("", updatedCard?.Description, "Description should be cleared");
-            Assert.IsFalse((bool)updatedCard?.Badges?.HasDescription, "Badges should report no description");
+            Assert.IsFalse(updatedCard?.Badges.HasDescription, "Badges should report no description");
         }
 
         [TestMethod]

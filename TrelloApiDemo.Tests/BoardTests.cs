@@ -50,7 +50,7 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        [DynamicData(nameof(BoardNameCases), DynamicDataSourceType.Method, DynamicDataDisplayName = nameof(GetTestDisplayName))]
+        [DynamicData(nameof(BoardNameCases), DynamicDataDisplayName = nameof(GetTestDisplayName))]
         public async Task CreateBoard_WithVariousNames_ShouldReturnValidBoardAsync(string testCase, string boardName)
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
@@ -114,7 +114,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for empty name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "Board ID should be null for empty name");
-            Assert.IsTrue((response.Content.Contains("invalid value for name")), "Expected error message for invalid board name");
+            Assert.IsTrue((response.Content?.Contains("invalid value for name")), "Expected error message for invalid board name");
         }
 
         [TestMethod]
@@ -127,7 +127,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for null name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "Board ID should be null for null name");
-            Assert.Contains("invalid value for name", response.Content, "Expected error message for null board name");
+            Assert.IsTrue((response.Content?.Contains("invalid value for name")), "Expected error message for null board name");
         }
 
         public static string GetTestDisplayName(MethodInfo methodInfo, object[] values)

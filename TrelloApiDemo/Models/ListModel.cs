@@ -5,12 +5,12 @@ namespace TrelloApiDemo.Models
     public class ListModel
     {
         [JsonProperty("id")]
-        public string? Id { get; set; }
+        public string Id { get; set; } = default!;
 
         [JsonProperty("name")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = default!;
 
         [JsonProperty("idBoard")]
-        public string? IdBoard { get; set; }
+        public string IdBoard { get; set; }= default!;
     }
 }

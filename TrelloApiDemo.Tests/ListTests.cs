@@ -6,7 +6,7 @@ namespace TrelloApiDemo.Tests
     [TestClass]
     public class ListTests
     {
-        private TrelloClient? _client;
+        private TrelloClient _client = default!;
         private string? _boardId;
 
         [TestInitialize]
@@ -25,7 +25,7 @@ namespace TrelloApiDemo.Tests
         }
 
         [TestMethod]
-        [DynamicData(nameof(ListNameCases), DynamicDataSourceType.Method, DynamicDataDisplayName = nameof(GetTestDisplayName))]
+        [DynamicData(nameof(ListNameCases), DynamicDataDisplayName = nameof(GetTestDisplayName))]
         public async Task CreateList_ShouldReturnValidListAsync(string testCase, string listName)
         {
             Assert.IsNotNull(_client, "_client is not initialized.");
@@ -62,7 +62,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for empty name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "List ID should be null for empty name");
-            Assert.IsTrue(response.Content.Contains("invalid value for name"), "Expected error message for invalid list name");
+            Assert.IsTrue(response.Content?.Contains("invalid value for name"), "Expected error message for invalid list name");
         }
 
         [TestMethod]
@@ -75,7 +75,7 @@ namespace TrelloApiDemo.Tests
             Assert.AreNotEqual(200, (int)response.StatusCode, "Expected failure for null name");
             Assert.AreEqual(400, (int)response.StatusCode, "BadRequest");
             Assert.IsNull(response.Data?.Id, "List ID should be null for null name");
-            Assert.IsTrue(response.Content.Contains("invalid value for name"), "Expected error message for null list name");
+            Assert.IsTrue(response.Content?.Contains("invalid value for name"), "Expected error message for null list name");
         }
 
         [TestCleanup]

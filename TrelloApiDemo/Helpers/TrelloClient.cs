@@ -17,7 +17,7 @@ namespace TrelloApiDemo.Helpers
             _client = new RestClient(Config.BaseUrl);
         }
 
-        public async Task<RestResponse<T>> SendRequestAsync<T>(RestRequest request) where T : new()
+        public async Task<RestResponse<T>> SendRequestAsync<T>(RestRequest request) where T : notnull, new()
         {
             var response = await _client.ExecuteAsync<T>(request);
 
