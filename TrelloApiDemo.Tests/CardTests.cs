@@ -6,7 +6,6 @@ using TrelloApiDemo.Models;
 namespace TrelloApiDemo.Tests
 {
     [TestClass]
-    [DoNotParallelize]
     public class CardTests
     {
         private TrelloClient? _client;

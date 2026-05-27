@@ -4,7 +4,6 @@ using TrelloApiDemo.Helpers;
 namespace TrelloApiDemo.Tests
 {
     [TestClass]
-    [DoNotParallelize]
     public class ListTests
     {
         private TrelloClient? _client;
