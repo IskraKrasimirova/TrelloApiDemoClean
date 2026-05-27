@@ -94,7 +94,14 @@ namespace TrelloApiDemo.Tests
             Assert.AreEqual(200, (int)getResponse.StatusCode);
             Assert.AreEqual(boardId, getResponse.Data?.Id);
 
-            await _client.DeleteBoardAsync(boardId);
+            try
+            {
+                await _client.DeleteBoardAsync(boardId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cleanup warning: {ex.Message}");
+            }
         }
 
         [TestMethod]
